@@ -1,0 +1,14 @@
+{
+  "modelPackage": "com.strandls.geoentities.pojo",
+  "apiPackage": "com.strandls.geoentities.controllers",
+  "invokerPackage": "com.strandls.geoentities",
+  "groupId": "com.strandls.biodiv",
+  "artifactId": "geoentities-client",
+  "artifactVersion": "1.0.0",
+  "fullJavaUtil": true,
+  "dateLibrary": "legacy",
+  "library": "jersey2",
+  "developerName": "Abhishek Kumar Rudra",
+  "developerEmail": "abhishek.rudra@strandls.com",
+  "java8": true
+}
