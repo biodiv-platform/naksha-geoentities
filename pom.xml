@@ -9,10 +9,8 @@
   <version>1.0.0</version>
   <packaging>war</packaging>
 
-  <name>geoentities-api Maven Webapp</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
-  
+  <name>biodiv-geoentities-api</name>
+  <url>https://github.com/strandls/biodiv-geoentities</url>
   <properties>
 
 		<!-- Plugins property -->
