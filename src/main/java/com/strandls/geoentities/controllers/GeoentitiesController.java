@@ -10,6 +10,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -31,7 +32,7 @@ import io.swagger.annotations.ApiResponses;
  * @author Abhishek Rudra
  *
  */
-@Api("Groentities Services")
+@Api("Geoentities Services")
 @Path(ApiConstants.V1 + ApiConstants.SERVICES)
 public class GeoentitiesController {
 
@@ -86,6 +87,24 @@ public class GeoentitiesController {
 				return Response.status(Status.OK).entity(result).build();
 			return Response.status(Status.NOT_ACCEPTABLE).build();
 
+		} catch (Exception e) {
+			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
+		}
+	}
+
+	@GET
+	@Path(ApiConstants.READ + "/{id}")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
+
+	@ApiOperation(value = "find by geoentity id", notes = "return the geoentity object", response = GeoentitiesCreateData.class)
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "unable to fetch the data", response = String.class) })
+
+	public Response findGeoentitiesById(@PathParam("id") String id) {
+		try {
+			Long geoentitiesId = Long.parseLong(id);
+			GeoentitiesCreateData result = services.fetchById(geoentitiesId);
+			return Response.status(Status.OK).entity(result).build();
 		} catch (Exception e) {
 			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
 		}

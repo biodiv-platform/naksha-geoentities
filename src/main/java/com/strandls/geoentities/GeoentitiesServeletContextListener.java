@@ -36,6 +36,8 @@ import com.google.inject.servlet.ServletModule;
 import com.strandls.geoentities.controllers.GeoentitiesControllerModule;
 import com.strandls.geoentities.dao.GeoentitiesDaoModule;
 import com.strandls.geoentities.services.impl.GeoentitiesServiceModule;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.PrecisionModel;
 
 /**
  * @author Abhishek Rudra
@@ -65,6 +67,9 @@ public class GeoentitiesServeletContextListener extends GuiceServletContextListe
 
 				configuration = configuration.configure();
 				SessionFactory sessionFactory = configuration.buildSessionFactory();
+
+				GeometryFactory geofactory = new GeometryFactory(new PrecisionModel(), 4326);
+				bind(GeometryFactory.class).toInstance(geofactory);
 
 				Map<String, String> props = new HashMap<String, String>();
 				props.put("javax.ws.rs.Application", ApplicationConfig.class.getName());

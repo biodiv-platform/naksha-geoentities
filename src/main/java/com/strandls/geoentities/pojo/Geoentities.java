@@ -3,6 +3,8 @@
  */
 package com.strandls.geoentities.pojo;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -25,8 +27,12 @@ import com.vividsolutions.jts.geom.Geometry;
 @Entity
 @Table(name = "geoentities")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Geoentities {
+public class Geoentities implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8961878712190103592L;
 	public Long id;
 	public String placeName;
 	public Geometry topology;

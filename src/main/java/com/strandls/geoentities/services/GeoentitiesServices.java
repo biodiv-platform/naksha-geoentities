@@ -18,4 +18,6 @@ public interface GeoentitiesServices {
 
 	public List<Geoentities> readPlaceName(String placename);
 
+	public GeoentitiesCreateData fetchById(Long id);
+
 }
