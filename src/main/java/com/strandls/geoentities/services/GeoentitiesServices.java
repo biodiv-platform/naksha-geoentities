@@ -20,4 +20,8 @@ public interface GeoentitiesServices {
 
 	public GeoentitiesCreateData fetchById(Long id);
 
+	public List<List<Double>> getBoundingBox(Long id);
+
+	Geoentities updateGeoenties(Long geoId, String wkt);
+	
 }

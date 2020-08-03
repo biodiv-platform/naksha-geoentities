@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -109,5 +110,35 @@ public class GeoentitiesController {
 			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
 		}
 	}
+	
+	@PUT
+	@Path(ApiConstants.UPDATE + "/{id}")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
 
+	@ApiOperation(value = "find by geoentity id", notes = "return the geoentity object", response = GeoentitiesCreateData.class)
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "unable to fetch the data", response = String.class) })
+
+	public Response updateGeoentitiesById(@PathParam("id") String id, @QueryParam("wktData")String wktData) {
+
+		if(wktData == null)
+			return Response.status(Status.BAD_REQUEST).entity("Invalid parameter").build();
+
+		try {
+			Long geoentitiesId = Long.parseLong(id);
+			Geoentities result = services.updateGeoenties(geoentitiesId, wktData);
+			return Response.status(Status.OK).entity(result).build();
+		} catch (Exception e) {
+			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
+		}
+	}
+
+	@GET
+	@Path(ApiConstants.BOUNDING_BOX+"/{id}")
+	@Consumes(MediaType.TEXT_HTML)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getBoundingBox(@PathParam("id") Long id) {
+		List<List<Double>> boundingBox = services.getBoundingBox(id);
+		return Response.ok().entity(boundingBox).build();
+	}
 }
