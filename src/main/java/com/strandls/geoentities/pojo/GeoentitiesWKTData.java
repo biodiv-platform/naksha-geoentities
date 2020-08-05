@@ -7,7 +7,7 @@ package com.strandls.geoentities.pojo;
  * @author Abhishek Rudra
  *
  */
-public class GeoentitiesCreateData {
+public class GeoentitiesWKTData {
 
 	public String placeName;
 	public String wktData;
@@ -15,7 +15,7 @@ public class GeoentitiesCreateData {
 	/**
 	 * 
 	 */
-	public GeoentitiesCreateData() {
+	public GeoentitiesWKTData() {
 		super();
 	}
 
@@ -23,7 +23,7 @@ public class GeoentitiesCreateData {
 	 * @param placeName
 	 * @param wktData
 	 */
-	public GeoentitiesCreateData(String placeName, String wktData) {
+	public GeoentitiesWKTData(String placeName, String wktData) {
 		super();
 		this.placeName = placeName;
 		this.wktData = wktData;
