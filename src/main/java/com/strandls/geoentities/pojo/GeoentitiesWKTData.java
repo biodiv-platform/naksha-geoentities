@@ -9,6 +9,7 @@ package com.strandls.geoentities.pojo;
  */
 public class GeoentitiesWKTData {
 
+	public Long id;
 	public String placeName;
 	public String wktData;
 
@@ -23,10 +24,19 @@ public class GeoentitiesWKTData {
 	 * @param placeName
 	 * @param wktData
 	 */
-	public GeoentitiesWKTData(String placeName, String wktData) {
+	public GeoentitiesWKTData(Long id, String placeName, String wktData) {
 		super();
+		this.id = id;
 		this.placeName = placeName;
 		this.wktData = wktData;
+	}
+	
+	public Long getId() {
+		return id;
+	}
+	
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getPlaceName() {

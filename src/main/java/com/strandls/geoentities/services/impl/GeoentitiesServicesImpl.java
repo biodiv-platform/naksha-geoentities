@@ -47,7 +47,7 @@ public class GeoentitiesServicesImpl implements GeoentitiesServices {
 				geoentities = geoentitiesDao.save(geoentities);
 				WKTWriter writer = new WKTWriter();
 				String wktData = writer.write(geoentities.getTopology());
-				return new GeoentitiesWKTData(geoentities.getPlaceName(), wktData);
+				return new GeoentitiesWKTData(geoentities.getId(), geoentities.getPlaceName(), wktData);
 			}
 
 		} catch (Exception e) {
@@ -70,7 +70,7 @@ public class GeoentitiesServicesImpl implements GeoentitiesServices {
 			geoEntities = geoentitiesDao.update(geoEntities);
 			WKTWriter writer = new WKTWriter();
 			String wktData = writer.write(geoEntities.getTopology());
-			return new GeoentitiesWKTData(geoEntities.getPlaceName(), wktData);
+			return new GeoentitiesWKTData(geoEntities.getId(), geoEntities.getPlaceName(), wktData);
 		} catch (ParseException e) {
 			logger.error(e.getMessage());
 		}
@@ -84,7 +84,7 @@ public class GeoentitiesServicesImpl implements GeoentitiesServices {
 		for (Geoentities geoentities : geoentitiesList) {
 			WKTWriter writer = new WKTWriter();
 			String wktData = writer.write(geoentities.getTopology());
-			result.add(new GeoentitiesWKTData(geoentities.getPlaceName(), wktData));
+			result.add(new GeoentitiesWKTData(geoentities.getId(), geoentities.getPlaceName(), wktData));
 		}
 		return result;
 	}
@@ -94,7 +94,7 @@ public class GeoentitiesServicesImpl implements GeoentitiesServices {
 		Geoentities result = geoentitiesDao.findById(id);
 		WKTWriter writer = new WKTWriter();
 		String wktData = writer.write(result.getTopology());
-		return new GeoentitiesWKTData(result.getPlaceName(), wktData);
+		return new GeoentitiesWKTData(result.getId(), result.getPlaceName(), wktData);
 	}
 
 	@Override

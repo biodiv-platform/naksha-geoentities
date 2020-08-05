@@ -115,7 +115,7 @@ public class GeoentitiesController {
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
 
-	@ApiOperation(value = "find by geoentity id", notes = "return the geoentity object", response = GeoentitiesWKTData.class)
+	@ApiOperation(value = "update by geoentity id", notes = "return the geoentity object", response = GeoentitiesWKTData.class)
 	@ApiResponses(value = { @ApiResponse(code = 400, message = "unable to fetch the data", response = String.class) })
 
 	public Response updateGeoentitiesById(@PathParam("id") String id, @QueryParam("wktData") String wktData) {
@@ -136,6 +136,10 @@ public class GeoentitiesController {
 	@Path(ApiConstants.BOUNDING_BOX + "/{id}")
 	@Consumes(MediaType.TEXT_HTML)
 	@Produces(MediaType.APPLICATION_JSON)
+	
+	@ApiOperation(value = "Get bounding box of the geoentity by id", notes = "return the Bounding box", response = List.class, responseContainer="List")
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "unable to fetch the data", response = String.class) })
+	
 	public Response getBoundingBox(@PathParam("id") Long id) {
 		List<List<Double>> boundingBox = services.getBoundingBox(id);
 		return Response.ok().entity(boundingBox).build();
