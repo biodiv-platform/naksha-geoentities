@@ -19,8 +19,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import com.strandls.geoentities.ApiConstants;
-import com.strandls.geoentities.pojo.Geoentities;
-import com.strandls.geoentities.pojo.GeoentitiesCreateData;
+import com.strandls.geoentities.pojo.GeoentitiesWKTData;
 import com.strandls.geoentities.services.GeoentitiesServices;
 
 import io.swagger.annotations.Api;
@@ -56,13 +55,13 @@ public class GeoentitiesController {
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
 
-	@ApiOperation(value = "read the placename and suggest geoentities", notes = "return the suggested geoentities", response = Geoentities.class, responseContainer = "List")
+	@ApiOperation(value = "read the placename and suggest geoentities", notes = "return the suggested geoentities", response = GeoentitiesWKTData.class, responseContainer = "List")
 	@ApiResponses(value = {
 			@ApiResponse(code = 400, message = "unable to fetch the geoentities", response = String.class) })
 
 	public Response getGeoentities(@QueryParam("palcename") String placename) {
 		try {
-			List<Geoentities> result = services.readPlaceName(placename);
+			List<GeoentitiesWKTData> result = services.readPlaceName(placename);
 			if (result != null)
 				return Response.status(Status.OK).entity(result).build();
 			return Response.status(Status.NOT_FOUND).entity("cannot find palce name").build();
@@ -76,14 +75,14 @@ public class GeoentitiesController {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 
-	@ApiOperation(value = "create the geoentites", notes = "Returns the geoentity created", response = Geoentities.class)
+	@ApiOperation(value = "create the geoentites", notes = "Returns the geoentity created", response = GeoentitiesWKTData.class)
 	@ApiResponses(value = {
 			@ApiResponse(code = 400, message = "unable to create the geoentity", response = String.class) })
 
 	public Response createGeoentities(
-			@ApiParam(name = "geoentitiesCreateData") GeoentitiesCreateData geoentitiesCreateData) {
+			@ApiParam(name = "geoentitiesCreateData") GeoentitiesWKTData geoentitiesCreateData) {
 		try {
-			Geoentities result = services.createGeoenties(geoentitiesCreateData);
+			GeoentitiesWKTData result = services.createGeoenties(geoentitiesCreateData);
 			if (result != null)
 				return Response.status(Status.OK).entity(result).build();
 			return Response.status(Status.NOT_ACCEPTABLE).build();
@@ -98,35 +97,35 @@ public class GeoentitiesController {
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
 
-	@ApiOperation(value = "find by geoentity id", notes = "return the geoentity object", response = GeoentitiesCreateData.class)
+	@ApiOperation(value = "find by geoentity id", notes = "return the geoentity object", response = GeoentitiesWKTData.class)
 	@ApiResponses(value = { @ApiResponse(code = 400, message = "unable to fetch the data", response = String.class) })
 
 	public Response findGeoentitiesById(@PathParam("id") String id) {
 		try {
 			Long geoentitiesId = Long.parseLong(id);
-			GeoentitiesCreateData result = services.fetchById(geoentitiesId);
+			GeoentitiesWKTData result = services.fetchById(geoentitiesId);
 			return Response.status(Status.OK).entity(result).build();
 		} catch (Exception e) {
 			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
 		}
 	}
-	
+
 	@PUT
 	@Path(ApiConstants.UPDATE + "/{id}")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
 
-	@ApiOperation(value = "find by geoentity id", notes = "return the geoentity object", response = GeoentitiesCreateData.class)
+	@ApiOperation(value = "update by geoentity id", notes = "return the geoentity object", response = GeoentitiesWKTData.class)
 	@ApiResponses(value = { @ApiResponse(code = 400, message = "unable to fetch the data", response = String.class) })
 
-	public Response updateGeoentitiesById(@PathParam("id") String id, @QueryParam("wktData")String wktData) {
+	public Response updateGeoentitiesById(@PathParam("id") String id, @QueryParam("wktData") String wktData) {
 
-		if(wktData == null)
+		if (wktData == null)
 			return Response.status(Status.BAD_REQUEST).entity("Invalid parameter").build();
 
 		try {
 			Long geoentitiesId = Long.parseLong(id);
-			Geoentities result = services.updateGeoenties(geoentitiesId, wktData);
+			GeoentitiesWKTData result = services.updateGeoenties(geoentitiesId, wktData);
 			return Response.status(Status.OK).entity(result).build();
 		} catch (Exception e) {
 			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
@@ -134,9 +133,13 @@ public class GeoentitiesController {
 	}
 
 	@GET
-	@Path(ApiConstants.BOUNDING_BOX+"/{id}")
+	@Path(ApiConstants.BOUNDING_BOX + "/{id}")
 	@Consumes(MediaType.TEXT_HTML)
 	@Produces(MediaType.APPLICATION_JSON)
+	
+	@ApiOperation(value = "Get bounding box of the geoentity by id", notes = "return the Bounding box", response = List.class, responseContainer="List")
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "unable to fetch the data", response = String.class) })
+	
 	public Response getBoundingBox(@PathParam("id") Long id) {
 		List<List<Double>> boundingBox = services.getBoundingBox(id);
 		return Response.ok().entity(boundingBox).build();

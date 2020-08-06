@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.strandls.geoentities.dao.GeoentitiesDao;
 import com.strandls.geoentities.pojo.Geoentities;
-import com.strandls.geoentities.pojo.GeoentitiesCreateData;
+import com.strandls.geoentities.pojo.GeoentitiesWKTData;
 import com.strandls.geoentities.services.GeoentitiesServices;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -36,7 +36,7 @@ public class GeoentitiesServicesImpl implements GeoentitiesServices {
 	private GeometryFactory geoFactory;
 
 	@Override
-	public Geoentities createGeoenties(GeoentitiesCreateData geoentitiesCreateData) {
+	public GeoentitiesWKTData createGeoenties(GeoentitiesWKTData geoentitiesCreateData) {
 
 		try {
 			if (geoentitiesCreateData.getPlaceName() != null && geoentitiesCreateData.getWktData() != null) {
@@ -45,7 +45,9 @@ public class GeoentitiesServicesImpl implements GeoentitiesServices {
 				System.out.println(topology.getGeometryType());
 				Geoentities geoentities = new Geoentities(null, geoentitiesCreateData.getPlaceName(), topology);
 				geoentities = geoentitiesDao.save(geoentities);
-				return geoentities;
+				WKTWriter writer = new WKTWriter();
+				String wktData = writer.write(geoentities.getTopology());
+				return new GeoentitiesWKTData(geoentities.getId(), geoentities.getPlaceName(), wktData);
 			}
 
 		} catch (Exception e) {
@@ -56,34 +58,43 @@ public class GeoentitiesServicesImpl implements GeoentitiesServices {
 	}
 
 	@Override
-	public Geoentities updateGeoenties(Long geoId, String wkt) {
+	public GeoentitiesWKTData updateGeoenties(Long geoId, String wkt) {
 
 		try {
 			WKTReader reader = new WKTReader(geoFactory);
 			Geometry topology = reader.read(wkt);
 			Geoentities geoEntities = geoentitiesDao.findById(geoId);
-			if(geoEntities == null) return null;
+			if (geoEntities == null)
+				return null;
 			geoEntities.setTopology(topology);
 			geoEntities = geoentitiesDao.update(geoEntities);
-			return geoEntities;
+			WKTWriter writer = new WKTWriter();
+			String wktData = writer.write(geoEntities.getTopology());
+			return new GeoentitiesWKTData(geoEntities.getId(), geoEntities.getPlaceName(), wktData);
 		} catch (ParseException e) {
 			logger.error(e.getMessage());
 		}
 		return null;
 	}
-	
+
 	@Override
-	public List<Geoentities> readPlaceName(String placename) {
-		List<Geoentities> result = geoentitiesDao.findByNameLike(placename);
+	public List<GeoentitiesWKTData> readPlaceName(String placename) {
+		List<Geoentities> geoentitiesList = geoentitiesDao.findByNameLike(placename);
+		List<GeoentitiesWKTData> result = new ArrayList<GeoentitiesWKTData>();
+		for (Geoentities geoentities : geoentitiesList) {
+			WKTWriter writer = new WKTWriter();
+			String wktData = writer.write(geoentities.getTopology());
+			result.add(new GeoentitiesWKTData(geoentities.getId(), geoentities.getPlaceName(), wktData));
+		}
 		return result;
 	}
 
 	@Override
-	public GeoentitiesCreateData fetchById(Long id) {
+	public GeoentitiesWKTData fetchById(Long id) {
 		Geoentities result = geoentitiesDao.findById(id);
 		WKTWriter writer = new WKTWriter();
 		String wktData = writer.write(result.getTopology());
-		return new GeoentitiesCreateData(result.getPlaceName(), wktData);
+		return new GeoentitiesWKTData(result.getId(), result.getPlaceName(), wktData);
 	}
 
 	@Override
@@ -93,10 +104,8 @@ public class GeoentitiesServicesImpl implements GeoentitiesServices {
 		Geometry topology = geoEntity.getTopology();
 		Geometry envelop = topology.getEnvelope();
 
-		Double  top = envelop.getCoordinates()[0].x, 
-				left = envelop.getCoordinates()[0].y,
-				bottom = envelop.getCoordinates()[3].x, 
-				right = envelop.getCoordinates()[3].y;
+		Double top = envelop.getCoordinates()[0].x, left = envelop.getCoordinates()[0].y,
+				bottom = envelop.getCoordinates()[3].x, right = envelop.getCoordinates()[3].y;
 
 		List<List<Double>> boundingBox = new ArrayList<List<Double>>();
 
