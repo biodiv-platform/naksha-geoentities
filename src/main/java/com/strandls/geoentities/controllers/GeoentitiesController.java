@@ -3,8 +3,13 @@
  */
 package com.strandls.geoentities.controllers;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -14,9 +19,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.StreamingOutput;
 
 import com.strandls.geoentities.ApiConstants;
 import com.strandls.geoentities.pojo.GeoentitiesWKTData;
@@ -136,12 +143,41 @@ public class GeoentitiesController {
 	@Path(ApiConstants.BOUNDING_BOX + "/{id}")
 	@Consumes(MediaType.TEXT_HTML)
 	@Produces(MediaType.APPLICATION_JSON)
-	
-	@ApiOperation(value = "Get bounding box of the geoentity by id", notes = "return the Bounding box", response = List.class, responseContainer="List")
+
+	@ApiOperation(value = "Get bounding box of the geoentity by id", notes = "return the Bounding box", response = List.class, responseContainer = "List")
 	@ApiResponses(value = { @ApiResponse(code = 400, message = "unable to fetch the data", response = String.class) })
-	
+
 	public Response getBoundingBox(@PathParam("id") Long id) {
 		List<List<Double>> boundingBox = services.getBoundingBox(id);
 		return Response.ok().entity(boundingBox).build();
+	}
+
+	/**
+	 * Generate the image for given geoentities on the fly.
+	 * @param id -  Id of the geoEntitities image needs to be generated.
+	 * @return
+	 * @throws IOException
+	 */
+	@GET
+	@Path("/image" + "/{id}")
+	@Consumes(MediaType.TEXT_PLAIN)
+
+	@ApiOperation(value = "Get the image of geoentity by id", notes = "return the Image of the geoEntity", response = StreamingOutput.class)
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "unable to fetch the data", response = String.class) })
+
+	public Response getImageFromGeoEntities(@PathParam("id") Long id) throws IOException {
+		BufferedImage imagePath = services.getImageFromGeoEntities(id);
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ImageIO.write(imagePath, "png", baos);
+
+		StreamingOutput sout;
+		sout = new StreamingOutput() {
+			@Override
+			public void write(OutputStream out) throws IOException, WebApplicationException {
+				baos.writeTo(out);
+			}
+		};
+		return Response.ok(sout).type("image/png").build();
 	}
 }

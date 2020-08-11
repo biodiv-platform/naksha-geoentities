@@ -3,6 +3,14 @@
  */
 package com.strandls.geoentities.services.impl;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +23,7 @@ import com.strandls.geoentities.dao.GeoentitiesDao;
 import com.strandls.geoentities.pojo.Geoentities;
 import com.strandls.geoentities.pojo.GeoentitiesWKTData;
 import com.strandls.geoentities.services.GeoentitiesServices;
+import com.vividsolutions.jts.awt.ShapeWriter;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.ParseException;
@@ -26,6 +35,10 @@ import com.vividsolutions.jts.io.WKTWriter;
  *
  */
 public class GeoentitiesServicesImpl implements GeoentitiesServices {
+
+	private static final int THUMBNAIL_WIDTH = 230;
+
+	private static final int THUMBNAIL_HEIGHT = 230;
 
 	private final Logger logger = LoggerFactory.getLogger(GeoentitiesServicesImpl.class);
 
@@ -122,5 +135,59 @@ public class GeoentitiesServicesImpl implements GeoentitiesServices {
 		boundingBox.add(bottomRight);
 
 		return boundingBox;
+	}
+
+	@Override
+	public BufferedImage getImageFromGeoEntities(Long id) throws IOException {
+		Geoentities geoEntity = geoentitiesDao.findById(id);
+		Geometry topology = geoEntity.getTopology();
+
+		// Convert geometry to shape object
+		ShapeWriter shapeWriter = new ShapeWriter();
+		Shape shape = shapeWriter.toShape(topology);
+		
+		// Image bounds
+		Rectangle2D bounds = shape.getBounds2D();
+		double minX = bounds.getMinX();
+		double maxX = bounds.getMaxX();
+		
+		double minY = bounds.getMinY();
+		double maxY = bounds.getMaxY();
+		
+		// Get the required scaling
+		double scaleX = 1;
+		double scaleY = 1;
+		if((maxX-minX) > ((maxY - minY))) {
+			scaleX = (THUMBNAIL_WIDTH-2) / (maxX - minX);
+			scaleY = scaleX;
+		}
+		else {
+			scaleY = (THUMBNAIL_HEIGHT-2) / (maxY - minY);
+			scaleX = scaleY;
+		}
+		
+		// Shift of the coordinates
+		double shiftX = minX * -1;
+		double shiftY = maxY * -1;
+		
+		// Image creation
+		BufferedImage image = new BufferedImage(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D graphics2D = image.createGraphics();
+		
+		// Background setup
+		graphics2D.setBackground(Color.WHITE);
+		graphics2D.clearRect(0, 0, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT);
+		graphics2D.setColor(Color.BLACK);
+		
+		// General path creation with shift and scaling required.
+		GeneralPath generalPath = new GeneralPath(shape);
+		shape = generalPath.createTransformedShape(AffineTransform.getTranslateInstance(shiftX, shiftY));
+		generalPath = new GeneralPath(shape);
+		shape = generalPath.createTransformedShape(AffineTransform.getScaleInstance(scaleX, -scaleY));
+		generalPath = new GeneralPath(shape);
+
+		graphics2D.draw(generalPath);
+		
+		return image;
 	}
 }
