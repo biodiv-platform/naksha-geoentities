@@ -7,10 +7,13 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -20,6 +23,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -179,5 +183,29 @@ public class GeoentitiesController {
 			}
 		};
 		return Response.ok(sout).type("image/png").build();
+	}
+	
+	/**
+	 * This method is written to just to get the url. 
+	 * Can be useful if we wish to keep the track of image and location on the file system. 
+	 * @param request
+	 * @param id
+	 * @return
+	 */
+	@GET
+	@Path("image")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
+
+	@ApiOperation(value = "Thumbnail url", notes = "returns thumbnail url", response = Map.class)
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "unable to get url", response = String.class) })
+
+	public Response getImagePathFromGeoEntities(@Context HttpServletRequest request, @QueryParam("id") String id) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		result.put("url", request.getRequestURL() + "/" + id);
+		result.put("uri", request.getRequestURI() + "/" + id);
+		
+		return Response.status(Status.OK).entity(result).build();
 	}
 }
