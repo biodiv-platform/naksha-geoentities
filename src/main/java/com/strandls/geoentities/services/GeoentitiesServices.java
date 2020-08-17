@@ -7,8 +7,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 
-import javax.imageio.stream.ImageOutputStream;
-
 import com.strandls.geoentities.pojo.GeoentitiesWKTData;
 
 /**
@@ -27,6 +25,7 @@ public interface GeoentitiesServices {
 
 	public GeoentitiesWKTData updateGeoenties(Long geoId, String wkt);
 
-	public BufferedImage getImageFromGeoEntities(Long id) throws IOException;
+	public BufferedImage getImageFromGeoEntities(Long id, Integer width, Integer height, String backgroundColorHex,
+			String fillColorHex) throws IOException;
 
 }
