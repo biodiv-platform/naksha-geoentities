@@ -19,10 +19,12 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.strandls.geoentities.GeoentitiesConfig;
 import com.strandls.geoentities.dao.GeoentitiesDao;
 import com.strandls.geoentities.pojo.Geoentities;
 import com.strandls.geoentities.pojo.GeoentitiesWKTData;
 import com.strandls.geoentities.services.GeoentitiesServices;
+import com.strandls.geoentities.util.ColorUtil;
 import com.vividsolutions.jts.awt.ShapeWriter;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -36,12 +38,20 @@ import com.vividsolutions.jts.io.WKTWriter;
  */
 public class GeoentitiesServicesImpl implements GeoentitiesServices {
 
-	private static final int THUMBNAIL_WIDTH = 230;
-
-	private static final int THUMBNAIL_HEIGHT = 230;
-
 	private final Logger logger = LoggerFactory.getLogger(GeoentitiesServicesImpl.class);
 
+	private static int IMAGE_WIDTH;
+	private static int IMAGE_HEIGHT;
+	private static String BACKGROUND_COLOR;
+	private static String FILL_COLOR;
+
+	static {
+		IMAGE_WIDTH      = GeoentitiesConfig.getInt("geoentities.image.width");
+		IMAGE_HEIGHT     = GeoentitiesConfig.getInt("geoentities.image.height");
+		BACKGROUND_COLOR = GeoentitiesConfig.getString("geoentities.image.color.background");
+		FILL_COLOR       = GeoentitiesConfig.getString("geoentities.image.color.fill");
+	}
+	
 	@Inject
 	private GeoentitiesDao geoentitiesDao;
 
@@ -138,10 +148,19 @@ public class GeoentitiesServicesImpl implements GeoentitiesServices {
 	}
 
 	@Override
-	public BufferedImage getImageFromGeoEntities(Long id) throws IOException {
+	public BufferedImage getImageFromGeoEntities(Long id, Integer width, Integer height, String backgroundColorHex, String fillColorHex) throws IOException {
+				
+		width = width == null ? IMAGE_WIDTH : width;
+		height = height == null ? IMAGE_HEIGHT : height;
+		backgroundColorHex = backgroundColorHex == null ? BACKGROUND_COLOR : backgroundColorHex;
+		fillColorHex = fillColorHex == null ? FILL_COLOR : fillColorHex;
+		
+		Color fillColor = ColorUtil.hex2Rgb(fillColorHex);
+		Color backgroundColor = ColorUtil.hex2Rgb(backgroundColorHex);
+		
 		Geoentities geoEntity = geoentitiesDao.findById(id);
 		Geometry topology = geoEntity.getTopology();
-
+		
 		// Convert geometry to shape object
 		ShapeWriter shapeWriter = new ShapeWriter();
 		Shape shape = shapeWriter.toShape(topology);
@@ -150,42 +169,32 @@ public class GeoentitiesServicesImpl implements GeoentitiesServices {
 		Rectangle2D bounds = shape.getBounds2D();
 		double minX = bounds.getMinX();
 		double maxX = bounds.getMaxX();
-		
 		double minY = bounds.getMinY();
 		double maxY = bounds.getMaxY();
 		
-		// Get the required scaling
-		double scaleX = 1;
-		double scaleY = 1;
-		if((maxX-minX) > ((maxY - minY))) {
-			scaleX = (THUMBNAIL_WIDTH-2) / (maxX - minX);
-			scaleY = scaleX;
-		}
-		else {
-			scaleY = (THUMBNAIL_HEIGHT-2) / (maxY - minY);
-			scaleX = scaleY;
-		}
+		// Get the required scale and shift 
+		double scaleDimension = ((width < height ? width : height) * 98.0 ) / 100.0;
+		double maxBound = (maxX-minX) > (maxY - minY) ? (maxX-minX) : (maxY - minY);
+		double scale = scaleDimension / maxBound;
 		
-		// Shift of the coordinates
 		double shiftX = minX * -1;
 		double shiftY = maxY * -1;
-		
-		// Image creation
-		BufferedImage image = new BufferedImage(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D graphics2D = image.createGraphics();
-		
-		// Background setup
-		graphics2D.setBackground(Color.WHITE);
-		graphics2D.clearRect(0, 0, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT);
-		graphics2D.setColor(Color.BLACK);
 		
 		// General path creation with shift and scaling required.
 		GeneralPath generalPath = new GeneralPath(shape);
 		shape = generalPath.createTransformedShape(AffineTransform.getTranslateInstance(shiftX, shiftY));
 		generalPath = new GeneralPath(shape);
-		shape = generalPath.createTransformedShape(AffineTransform.getScaleInstance(scaleX, -scaleY));
+		shape = generalPath.createTransformedShape(AffineTransform.getScaleInstance(scale, -scale));
 		generalPath = new GeneralPath(shape);
 
+		// Image creation
+		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D graphics2D = image.createGraphics();
+		
+		graphics2D.setBackground(backgroundColor);
+		graphics2D.clearRect(0, 0, width, height);
+		graphics2D.setColor(fillColor);
+		graphics2D.fill(generalPath);
 		graphics2D.draw(generalPath);
 		
 		return image;

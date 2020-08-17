@@ -158,7 +158,8 @@ public class GeoentitiesController {
 
 	/**
 	 * Generate the image for given geoentities on the fly.
-	 * @param id -  Id of the geoEntitities image needs to be generated.
+	 * 
+	 * @param id - Id of the geoEntitities image needs to be generated.
 	 * @return
 	 * @throws IOException
 	 */
@@ -169,8 +170,11 @@ public class GeoentitiesController {
 	@ApiOperation(value = "Get the image of geoentity by id", notes = "return the Image of the geoEntity", response = StreamingOutput.class)
 	@ApiResponses(value = { @ApiResponse(code = 400, message = "unable to fetch the data", response = String.class) })
 
-	public Response getImageFromGeoEntities(@PathParam("id") Long id) throws IOException {
-		BufferedImage imagePath = services.getImageFromGeoEntities(id);
+	public Response getImageFromGeoEntities(@PathParam("id") Long id, @QueryParam("width") Integer width,
+			@QueryParam("height") Integer height, @QueryParam("backgroundColor") String backgroundColorHex,
+			@QueryParam("fillColor") String fillColorHex) throws IOException {
+
+		BufferedImage imagePath = services.getImageFromGeoEntities(id, width, height, backgroundColorHex, fillColorHex);
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ImageIO.write(imagePath, "png", baos);
@@ -184,10 +188,11 @@ public class GeoentitiesController {
 		};
 		return Response.ok(sout).type("image/png").build();
 	}
-	
+
 	/**
-	 * This method is written to just to get the url. 
-	 * Can be useful if we wish to keep the track of image and location on the file system. 
+	 * This method is written to just to get the url. Can be useful if we wish to
+	 * keep the track of image and location on the file system.
+	 * 
 	 * @param request
 	 * @param id
 	 * @return
@@ -202,10 +207,10 @@ public class GeoentitiesController {
 
 	public Response getImagePathFromGeoEntities(@Context HttpServletRequest request, @QueryParam("id") String id) {
 		Map<String, Object> result = new HashMap<String, Object>();
-		
+
 		result.put("url", request.getRequestURL() + "/" + id);
 		result.put("uri", request.getRequestURI() + "/" + id);
-		
+
 		return Response.status(Status.OK).entity(result).build();
 	}
 }
