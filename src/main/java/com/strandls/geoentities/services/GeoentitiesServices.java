@@ -28,4 +28,6 @@ public interface GeoentitiesServices {
 	public BufferedImage getImageFromGeoEntities(Long id, Integer width, Integer height, String backgroundColorHex,
 			String fillColorHex) throws IOException;
 
+	public String getGeoJson(Long id);
+
 }
