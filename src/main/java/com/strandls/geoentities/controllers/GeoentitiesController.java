@@ -144,6 +144,24 @@ public class GeoentitiesController {
 	}
 
 	@GET
+	@Path(ApiConstants.GEO_JSON + "/{id}")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
+
+	@ApiOperation(value = "get the geoJson by geoentity id", notes = "return the geoentity object", response = String.class)
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "unable to fetch the geoJsonData", response = String.class) })
+
+	public Response getGeoJsonById(@PathParam("id") String id) {
+		try {
+			Long geoentitiesId = Long.parseLong(id);
+			String result = services.getGeoJson(geoentitiesId);
+			return Response.status(Status.OK).entity(result).build();
+		} catch (Exception e) {
+			return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
+		}
+	}
+	
+	@GET
 	@Path(ApiConstants.BOUNDING_BOX + "/{id}")
 	@Consumes(MediaType.TEXT_HTML)
 	@Produces(MediaType.APPLICATION_JSON)

@@ -31,6 +31,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.WKTWriter;
+import com.vividsolutions.jts.io.geojson.GeoJsonWriter;
 
 /**
  * @author Abhishek Rudra
@@ -118,6 +119,15 @@ public class GeoentitiesServicesImpl implements GeoentitiesServices {
 		WKTWriter writer = new WKTWriter();
 		String wktData = writer.write(result.getTopology());
 		return new GeoentitiesWKTData(result.getId(), result.getPlaceName(), wktData);
+	}
+	
+	@Override
+	public String getGeoJson(Long id) {
+		Geoentities entity = geoentitiesDao.findById(id);
+		Geometry geometry = entity.getTopology();
+		GeoJsonWriter writer = new GeoJsonWriter();
+		String geoJson = writer.write(geometry).trim();
+		return geoJson;
 	}
 
 	@Override
