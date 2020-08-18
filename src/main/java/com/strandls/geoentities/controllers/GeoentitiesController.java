@@ -5,6 +5,7 @@ package com.strandls.geoentities.controllers;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
@@ -185,7 +186,7 @@ public class GeoentitiesController {
 	@Path("/image" + "/{id}")
 	@Consumes(MediaType.TEXT_PLAIN)
 
-	@ApiOperation(value = "Get the image of geoentity by id", notes = "return the Image of the geoEntity", response = StreamingOutput.class)
+	@ApiOperation(value = "Get the image of geoentity by id", notes = "return the Image of the geoEntity", response = File.class)
 	@ApiResponses(value = { @ApiResponse(code = 400, message = "unable to fetch the data", response = String.class) })
 
 	public Response getImageFromGeoEntities(@PathParam("id") Long id, @QueryParam("width") Integer width,
