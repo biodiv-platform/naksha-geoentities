@@ -92,9 +92,12 @@ public class GeoentitiesServicesImpl implements GeoentitiesServices {
 	@Override
 	public GeoentitiesWKTData fetchById(Long id) {
 		Geoentities result = geoentitiesDao.findById(id);
-		WKTWriter writer = new WKTWriter();
-		String wktData = writer.write(result.getTopology());
-		return new GeoentitiesWKTData(result.getId(), result.getPlaceName(), wktData);
+		if (result != null) {
+			WKTWriter writer = new WKTWriter();
+			String wktData = writer.write(result.getTopology());
+			return new GeoentitiesWKTData(result.getId(), result.getPlaceName(), wktData);
+		}
+		return null;
 	}
 
 	@Override
