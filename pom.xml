@@ -28,6 +28,11 @@
 		<srcDir>src/main/webapp</srcDir>
 		<base-path>/geoentities-api/api</base-path>
 		<location>com.strandls.geoentities</location>
+	  
+		<!-- Sonar Cloud -->
+		<sonar.projectKey>strandls_naksha-geoentities</sonar.projectKey>
+		<sonar.organization>strandls</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
 
 	<distributionManagement>
