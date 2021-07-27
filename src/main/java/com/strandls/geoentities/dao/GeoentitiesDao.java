@@ -52,11 +52,11 @@ public class GeoentitiesDao extends AbstractDAO<Geoentities, Long> {
 		Session session = sessionFactory.openSession();
 		List<Geoentities> result = new ArrayList<Geoentities>();
 
-		String qry = "from Geoentities where placeName like :phrase order by char_length(placeName) ASC";
+		String qry = "from Geoentities where lower(placeName) like :phrase order by char_length(placeName) ASC";
 
 		try {
 			Query<Geoentities> query = session.createQuery(qry);
-			phrase = "%" + phrase + "%";
+			phrase = "%" + phrase.toLowerCase() + "%";
 			query.setParameter("phrase", phrase);
 			query.setMaxResults(10);
 			result = query.getResultList();
