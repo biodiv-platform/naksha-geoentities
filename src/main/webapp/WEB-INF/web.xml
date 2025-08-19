@@ -8,7 +8,7 @@
 	</welcome-file-list>
 
 	<listener>
-		<listener-class>com.strandls.geoentities.GeoentitiesServeletContextListener</listener-class>
+		<listener-class>com.strandls.geoentities.GeoentitiesServletContextListener</listener-class>
 	</listener>
 	<filter>
 		<filter-name>GuiceFilter</filter-name>

@@ -1,12 +1,8 @@
-/**
- * 
- */
+/** */
 package com.strandls.geoentities.dao;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.inject.Inject;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -17,9 +13,10 @@ import org.slf4j.LoggerFactory;
 import com.strandls.geoentities.pojo.Geoentities;
 import com.strandls.geoentities.util.AbstractDAO;
 
+import jakarta.inject.Inject;
+
 /**
  * @author Abhishek Rudra
- *
  */
 public class GeoentitiesDao extends AbstractDAO<Geoentities, Long> {
 
@@ -68,7 +65,5 @@ public class GeoentitiesDao extends AbstractDAO<Geoentities, Long> {
 		}
 
 		return result;
-
 	}
-
 }

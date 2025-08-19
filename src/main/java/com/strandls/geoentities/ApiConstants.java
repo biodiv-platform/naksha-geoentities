@@ -1,11 +1,8 @@
-/**
- * 
- */
+/** */
 package com.strandls.geoentities;
 
 /**
  * @author Abhishek Rudra
- *
  */
 public class ApiConstants {
 
@@ -18,4 +15,7 @@ public class ApiConstants {
 	public static final String BOUNDING_BOX = "/boundingBox";
 	public static final String UPDATE = "/update";
 	public static final String GEO_JSON = "/geoJson";
+
+	private ApiConstants() {
+	}
 }

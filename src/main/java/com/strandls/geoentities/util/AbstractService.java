@@ -11,7 +11,7 @@ public abstract class AbstractService<T> {
 	public AbstractService(AbstractDAO<T, Long> dao) {
 		System.out.println("\nAbstractService constructor");
 		this.dao = dao;
-		entityClass = ((Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0]);
+		entityClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 	}
 
 	public T save(T entity) {
@@ -30,7 +30,6 @@ public abstract class AbstractService<T> {
 		} catch (RuntimeException re) {
 			throw re;
 		}
-
 	}
 
 	public T delete(Long id) {
@@ -70,5 +69,4 @@ public abstract class AbstractService<T> {
 			throw re;
 		}
 	}
-
 }

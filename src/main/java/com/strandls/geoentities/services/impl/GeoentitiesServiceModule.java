@@ -1,6 +1,4 @@
-/**
- * 
- */
+/** */
 package com.strandls.geoentities.services.impl;
 
 import com.google.inject.AbstractModule;
@@ -9,7 +7,6 @@ import com.strandls.geoentities.services.GeoentitiesServices;
 
 /**
  * @author Abhishek Rudra
- *
  */
 public class GeoentitiesServiceModule extends AbstractModule {
 

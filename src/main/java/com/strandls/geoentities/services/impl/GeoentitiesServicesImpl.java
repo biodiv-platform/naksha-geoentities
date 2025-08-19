@@ -1,6 +1,4 @@
-/**
- * 
- */
+/** */
 package com.strandls.geoentities.services.impl;
 
 import java.awt.Color;
@@ -13,8 +11,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,26 +29,27 @@ import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.WKTWriter;
 import com.vividsolutions.jts.io.geojson.GeoJsonWriter;
 
+import jakarta.inject.Inject;
+
 /**
  * @author Abhishek Rudra
- *
  */
 public class GeoentitiesServicesImpl implements GeoentitiesServices {
 
 	private final Logger logger = LoggerFactory.getLogger(GeoentitiesServicesImpl.class);
 
-	private static int IMAGE_WIDTH;
-	private static int IMAGE_HEIGHT;
-	private static String BACKGROUND_COLOR;
-	private static String FILL_COLOR;
+	private static final int IMAGE_WIDTH;
+	private static final int IMAGE_HEIGHT;
+	private static final String BACKGROUND_COLOR;
+	private static final String FILL_COLOR;
 
 	static {
-		IMAGE_WIDTH      = GeoentitiesConfig.getInt("geoentities.image.width");
-		IMAGE_HEIGHT     = GeoentitiesConfig.getInt("geoentities.image.height");
+		IMAGE_WIDTH = GeoentitiesConfig.getInt("geoentities.image.width");
+		IMAGE_HEIGHT = GeoentitiesConfig.getInt("geoentities.image.height");
 		BACKGROUND_COLOR = GeoentitiesConfig.getString("geoentities.image.color.background");
-		FILL_COLOR       = GeoentitiesConfig.getString("geoentities.image.color.fill");
+		FILL_COLOR = GeoentitiesConfig.getString("geoentities.image.color.fill");
 	}
-	
+
 	@Inject
 	private GeoentitiesDao geoentitiesDao;
 
@@ -88,8 +85,9 @@ public class GeoentitiesServicesImpl implements GeoentitiesServices {
 			WKTReader reader = new WKTReader(geoFactory);
 			Geometry topology = reader.read(wkt);
 			Geoentities geoEntities = geoentitiesDao.findById(geoId);
-			if (geoEntities == null)
+			if (geoEntities == null) {
 				return null;
+			}
 			geoEntities.setTopology(topology);
 			geoEntities = geoentitiesDao.update(geoEntities);
 			WKTWriter writer = new WKTWriter();
@@ -123,7 +121,7 @@ public class GeoentitiesServicesImpl implements GeoentitiesServices {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public String getGeoJson(Long id) {
 		Geoentities entity = geoentitiesDao.findById(id);
@@ -161,38 +159,39 @@ public class GeoentitiesServicesImpl implements GeoentitiesServices {
 	}
 
 	@Override
-	public BufferedImage getImageFromGeoEntities(Long id, Integer width, Integer height, String backgroundColorHex, String fillColorHex) throws IOException {
-				
+	public BufferedImage getImageFromGeoEntities(Long id, Integer width, Integer height, String backgroundColorHex,
+			String fillColorHex) throws IOException {
+
 		width = width == null ? IMAGE_WIDTH : width;
 		height = height == null ? IMAGE_HEIGHT : height;
 		backgroundColorHex = backgroundColorHex == null ? BACKGROUND_COLOR : backgroundColorHex;
 		fillColorHex = fillColorHex == null ? FILL_COLOR : fillColorHex;
-		
+
 		Color fillColor = ColorUtil.hex2Rgb(fillColorHex);
 		Color backgroundColor = ColorUtil.hex2Rgb(backgroundColorHex);
-		
+
 		Geoentities geoEntity = geoentitiesDao.findById(id);
 		Geometry topology = geoEntity.getTopology();
-		
+
 		// Convert geometry to shape object
 		ShapeWriter shapeWriter = new ShapeWriter();
 		Shape shape = shapeWriter.toShape(topology);
-		
+
 		// Image bounds
 		Rectangle2D bounds = shape.getBounds2D();
 		double minX = bounds.getMinX();
 		double maxX = bounds.getMaxX();
 		double minY = bounds.getMinY();
 		double maxY = bounds.getMaxY();
-		
-		// Get the required scale and shift 
-		double scaleDimension = ((width < height ? width : height) * 98.0 ) / 100.0;
-		double maxBound = (maxX-minX) > (maxY - minY) ? (maxX-minX) : (maxY - minY);
+
+		// Get the required scale and shift
+		double scaleDimension = ((width < height ? width : height) * 98.0) / 100.0;
+		double maxBound = (maxX - minX) > (maxY - minY) ? (maxX - minX) : (maxY - minY);
 		double scale = scaleDimension / maxBound;
-		
+
 		double shiftX = minX * -1;
 		double shiftY = maxY * -1;
-		
+
 		// General path creation with shift and scaling required.
 		GeneralPath generalPath = new GeneralPath(shape);
 		shape = generalPath.createTransformedShape(AffineTransform.getTranslateInstance(shiftX, shiftY));
@@ -203,13 +202,13 @@ public class GeoentitiesServicesImpl implements GeoentitiesServices {
 		// Image creation
 		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D graphics2D = image.createGraphics();
-		
+
 		graphics2D.setBackground(backgroundColor);
 		graphics2D.clearRect(0, 0, width, height);
 		graphics2D.setColor(fillColor);
 		graphics2D.fill(generalPath);
 		graphics2D.draw(generalPath);
-		
+
 		return image;
 	}
 }

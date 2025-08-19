@@ -1,6 +1,4 @@
-/**
- * 
- */
+/** */
 package com.strandls.geoentities.services;
 
 import java.awt.image.BufferedImage;
@@ -11,7 +9,6 @@ import com.strandls.geoentities.pojo.GeoentitiesWKTData;
 
 /**
  * @author Abhishek Rudra
- *
  */
 public interface GeoentitiesServices {
 
@@ -29,5 +26,4 @@ public interface GeoentitiesServices {
 			String fillColorHex) throws IOException;
 
 	public String getGeoJson(Long id);
-
 }

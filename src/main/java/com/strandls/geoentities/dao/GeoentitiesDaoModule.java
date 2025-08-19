@@ -1,6 +1,4 @@
-/**
- * 
- */
+/** */
 package com.strandls.geoentities.dao;
 
 import com.google.inject.AbstractModule;
@@ -8,7 +6,6 @@ import com.google.inject.Scopes;
 
 /**
  * @author Abhishek Rudra
- *
  */
 public class GeoentitiesDaoModule extends AbstractModule {
 

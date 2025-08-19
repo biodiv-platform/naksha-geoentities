@@ -1,16 +1,8 @@
-/**
- * 
- */
+/** */
 package com.strandls.geoentities.pojo;
 
+import java.io.Serial;
 import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 import com.bedatadriven.jackson.datatype.jts.serialization.GeometryDeserializer;
 import com.bedatadriven.jackson.datatype.jts.serialization.GeometrySerializer;
@@ -19,27 +11,30 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.vividsolutions.jts.geom.Geometry;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 /**
  * @author Abhishek Rudra
- *
  */
-
 @Entity
 @Table(name = "geoentities")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Geoentities implements Serializable {
 
-	/**
-	 * 
-	 */
+	/** */
+	@Serial
 	private static final long serialVersionUID = 8961878712190103592L;
+
 	public Long id;
 	public String placeName;
 	public Geometry topology;
 
-	/**
-	 * 
-	 */
+	/** */
 	public Geoentities() {
 		super();
 	}
@@ -86,5 +81,4 @@ public class Geoentities implements Serializable {
 	public void setTopology(Geometry topology) {
 		this.topology = topology;
 	}
-
 }
