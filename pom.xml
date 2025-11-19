@@ -22,7 +22,7 @@
         <org.pac4j.version>5.1.0</org.pac4j.version>
         <jax-rs-pac4j.version>3.0.0</jax-rs-pac4j.version>
 
-        <postgresql.version>42.6.0</postgresql.version>
+        <postgresql.version>42.7.8</postgresql.version>
 
         <swagger-ui.version>3.23.5</swagger-ui.version>
         <swagger.version>2.2.21</swagger.version>
